@@ -1,1 +1,37 @@
+name: Deploy to AWS S3 #파일 이름임.
+on:
+  push:
+    branches:
+      - main #메인에 푸시를 하면 밑에 있는 jobs가 돌아갈것이다.
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
 
+    - name: setup node.js
+      uses: actions/setup-node@v2 #액션스에 노드 설치.
+      with:
+        node-version: '22' #노드버전
+    
+    - name: npm install
+      working-directory: .
+      run: npm install #현재폴더에서 npm install 실행
+
+    - name: npm build
+      working-directory: .
+      run: npm run build #현재폴더에서 npm run build 실행(dist폴더 생성)
+    
+    - name: setup aws cli
+      uses: aws-actions/configure-aws-credentials@v2 #cli를 쓰기위한 aws cli설치.
+      with:
+        aws-access-key-id: ${{secrets.AWS_S3_ACCESS_KEY}} #설정한 키 이름
+        aws-secret-access-key: ${{secrets.AWS_S3_SECRET_KEY}} #설정한 키 이름
+        aws-region: "ap-northeast-2"
+
+    - name: deploy to s3
+      run: |
+        aws s3 cp ./dist s3://www.jooncodehyuk.site/ --recursive
+        
+    - name: invalidate cloudfront cache
+      run: aws cloudfront create-invalidation --distribution-id E2GV49Q9PL9CXW --paths "/*"
