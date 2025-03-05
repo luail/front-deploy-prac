@@ -10,7 +10,7 @@
                     </div>
                 </v-col>
                 <v-col class="text-center">
-                    <v-btn :to="{path:'/'}">java java java 자바!!!!</v-btn>
+                    <v-btn :to="{path:'/'}">java java java 파이썬!!!!</v-btn>
                 </v-col>
                 <v-col class="d-flex justify-end">
                     <v-btn v-if="isLogin" :to="{path:'/order/cart'}">장바구니 {{ getTotalQauntity }}</v-btn>
